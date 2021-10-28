@@ -101,18 +101,41 @@ def build_graph(kmer_dict):
 
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
-    pass
+    if delete_entry_node == True and delete_sink_node ==True:
+        for path in path_list:
+            graph.remove_nodes_from(path) 
+    elif delete_entry_node == True and delete_sink_node == False:
+        for path in path_list:
+            graph.remove_nodes_from(path[:-1]) 
+    elif delete_entry_node == False and delete_sink_node == True:
+        for path in path_list:
+            graph.remove_nodes_from(path[1:]) 
+    else:
+        for path in path_list:
+            graph.remove_nodes_from(path[1:-1]) 
+    return graph
+
+
 
 def std(data):
-    pass
+    return statistics.stdev(data)
 
 
 def select_best_path(graph, path_list, path_length, weight_avg_list, 
                      delete_entry_node=False, delete_sink_node=False):
-    pass
+    if std(weight_avg_list) != 0:
+        max_weight = max(weight_avg_list)
+        path_list1 = [path for path in path_list if ]
+        return path_list[weight_avg_list.index(max_weight)]
+    elif std(path_list)!= 0:
+        max_length = max(path_length)
+        return path_list[path_list.index(max_length)]
+    else : 
+        return path_list[random.randint()]
 
 def path_average_weight(graph, path):
-    pass
+    return statistics.mean([d["weight"] for (u, v, d) in graph.subgraph(path).edges(data=True)])
+
 
 def solve_bubble(graph, ancestor_node, descendant_node):
     pass
@@ -152,9 +175,13 @@ def get_contigs(graph, starting_nodes, ending_nodes):
                         contig=contig+p[n][-1]
                     contigs.append((contig,len(contig)))
     return contigs
-def save_contigs(contigs_list, output_file):
-    pass
 
+def save_contigs(contigs_list, output_file):
+    f = open(output_file, "w")
+    for i,contig in enumerate(contigs_list) :
+        f.write(">contig_"+str(i) +" len="+str(contig[1])+"\n")
+        f.write(fill(contig[0],width=80)+"\n")
+    f.close()
 
 def fill(text, width=80):
     """Split text with a line return to respect fasta format"""
@@ -206,7 +233,15 @@ def main():
     # Save the graph in file
     # if args.graph_file:
     #     save_graph(graph, args.graph_file)
-    list=build_kmer_dict(args.fastq_file,5)
-    print(list["ACTTG"])
+    lis=build_kmer_dict(args.fastq_file,22)
+    G=build_graph(lis)
+    print(G.number_of_nodes())
+    start=get_starting_nodes(G)
+    ending_nodes=get_sink_nodes(G)
+    contigs=get_contigs(G,start,ending_nodes)
+    output_file="contigs.txt"
+    print(start)
+    save_contigs(contigs,output_file)
+
 if __name__ == '__main__':
     main()
