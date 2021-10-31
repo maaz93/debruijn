@@ -25,7 +25,7 @@ random.seed(9001)
 from random import randint
 import networkx as nx
 
-__author__ = "Your Name"
+__author__ = "Hassna et Maaz"
 __copyright__ = "Universite Paris Diderot"
 __credits__ = ["Your Name"]
 __license__ = "GPL"
